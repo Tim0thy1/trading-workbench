@@ -526,7 +526,25 @@
   }
 
   // ===== 启动 =====
-  loadTodos();
+  // 支持 #token=xxx 一键配置：自动保存到本地并清除地址栏中的 token
+  var hashToken = null;
+  try{
+    var hm = location.hash.match(/token=([^&]+)/);
+    if(hm && hm[1]) hashToken = decodeURIComponent(hm[1]);
+  }catch(e){}
+
+  if(hashToken && hashToken.length > 10){
+    token = hashToken;
+    localStorage.setItem(TOKEN_KEY, token);
+    try{ history.replaceState(null, '', location.pathname + location.search); }catch(e){}
+    setSync('busy', 'Token 已自动配置，正在连接…');
+    loadTodos();
+    setTimeout(function(){
+      setSync('ok', '✅ Token 已配置并保存，Todo 同步已开启');
+    }, 1800);
+  }else{
+    loadTodos();
+  }
 })();
 </script>
 </body>
