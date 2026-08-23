@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>交易工作台 · Workbench</title>
+<style>
+  :root{
+    --bg:#FBFAF8;
+    --bg2:#ffffff;
+    --bg3:#F5F2EE;
+    --ink:#403C38;
+    --muted:#66615A;
+    --rule:#EBE7E2;
+    --accent:#0D9488;
+    --accent2:#D97706;
+    --warn:#D97706;
+    --green:#16A34A;
+    --green-dim:rgba(22,163,74,.12);
+    --red:#DC2626;
+    --red-dim:rgba(220,38,38,.12);
+    --amber-dim:rgba(217,119,6,.10);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+    font-size:15px;line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:'SF Mono',Menlo,Consolas,monospace}
+
+  /* ===== Header ===== */
+  .header{
+    position:sticky;top:0;z-index:100;
+    background:var(--bg2);
+    border-bottom:1px solid var(--rule);
+    padding:0 20px;
+    display:flex;align-items:center;gap:18px;
+    height:58px;
+  }
+  .brand{display:flex;align-items:center;gap:10px;flex-shrink:0}
+  .brand-mark{
+    width:34px;height:34px;border-radius:9px;flex-shrink:0;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-weight:800;font-size:17px;
+  }
+  .brand-name{font-weight:800;font-size:16px;line-height:1.1}
+  .brand-sub{font-size:10.5px;color:var(--muted);letter-spacing:.05em}
+
+  .nav{display:flex;gap:4px;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none}
+  .nav::-webkit-scrollbar{display:none}
+  .nav-item{
+    display:flex;align-items:center;gap:7px;
+    padding:9px 14px;border-radius:9px;
+    color:var(--muted);cursor:pointer;font-size:13.5px;font-weight:600;
+    border:1px solid transparent;transition:all .18s ease;user-select:none;white-space:nowrap;
+  }
+  .nav-item:hover{color:var(--ink);background:var(--bg3)}
+  .nav-item.active{color:var(--accent);background:linear-gradient(135deg,rgba(13,148,136,.12),rgba(217,119,6,.08));border-color:var(--rule)}
+  .nav-ico{font-size:15px}
+
+  .header-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+  .icon-btn{
+    width:34px;height:34px;border-radius:8px;border:1px solid var(--rule);
+    background:var(--bg2);color:var(--muted);cursor:pointer;font-size:16px;
+    display:flex;align-items:center;justify-content:center;transition:all .15s;
+  }
+  .icon-btn:hover{color:var(--accent);border-color:var(--accent)}
+
+  /* ===== Main ===== */
+  .main{height:calc(100vh - 58px);position:relative}
+  .module{display:none;height:100%}
+  .module.active{display:block;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+
+  .frame-wrap{height:100%}
+  .frame-wrap iframe{width:100%;height:100%;border:none;display:block;background:var(--bg)}
+
+  /* ===== Todo ===== */
+  .todo-wrap{max-width:760px;margin:0 auto;padding:28px 20px 60px}
+  .todo-head{margin-bottom:22px}
+  .todo-kicker{font-size:11.5px;letter-spacing:.14em;color:var(--accent);text-transform:uppercase;margin-bottom:6px;font-weight:700}
+  .todo-title{font-size:24px;font-weight:800;line-height:1.2}
+  .todo-sub{font-size:13px;color:var(--muted);margin-top:6px}
+
+  .todo-stats{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+  .tstat{background:var(--bg2);border:1px solid var(--rule);border-radius:10px;padding:10px 16px;flex:1;min-width:120px}
+  .tstat .v{font-family:'SF Mono',Menlo,Consolas,monospace;font-weight:800;font-size:20px}
+  .tstat .l{font-size:11px;color:var(--muted);margin-top:2px}
+  .tstat.g .v{color:var(--green)}
+  .tstat.o .v{color:var(--accent2)}
+  .tstat.t .v{color:var(--accent)}
+
+  .todo-add{
+    display:flex;gap:10px;margin-bottom:18px;
+    background:var(--bg2);border:1px solid var(--rule);border-radius:12px;padding:12px;
+  }
+  .todo-add input{
+    flex:1;border:1px solid var(--rule);border-radius:8px;background:var(--bg);
+    color:var(--ink);font-size:14px;padding:10px 12px;font-family:inherit;min-width:0;
+  }
+  .todo-add input:focus{outline:none;border-color:var(--accent)}
+  .todo-add select{
+    border:1px solid var(--rule);border-radius:8px;background:var(--bg);
+    color:var(--ink);font-size:13px;padding:0 8px;font-family:inherit;
+  }
+  .todo-add button{
+    border:none;border-radius:8px;padding:0 18px;font-weight:700;font-size:13.5px;cursor:pointer;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;transition:opacity .15s;
+  }
+  .todo-add button:hover{opacity:.88}
+
+  .todo-list{display:flex;flex-direction:column;gap:8px}
+  .todo-item{
+    display:flex;align-items:center;gap:12px;
+    background:var(--bg2);border:1px solid var(--rule);border-radius:11px;
+    padding:13px 15px;transition:all .15s;
+  }
+  .todo-item:hover{border-color:var(--accent)}
+  .todo-item.done{opacity:.55}
+  .todo-item.done .todo-text{text-decoration:line-through;color:var(--muted)}
+  .todo-check{
+    width:22px;height:22px;border-radius:6px;border:2px solid var(--rule);
+    cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+    font-size:13px;color:#fff;transition:all .15s;background:var(--bg);
+  }
+  .todo-item.done .todo-check{background:var(--green);border-color:var(--green)}
+  .todo-main{flex:1;min-width:0}
+  .todo-text{font-size:14px;word-break:break-word}
+  .todo-meta{font-size:11px;color:var(--muted);margin-top:3px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .pri{font-size:10px;font-weight:700;padding:1px 8px;border-radius:20px}
+  .pri.high{background:var(--red-dim);color:var(--red)}
+  .pri.mid{background:var(--amber-dim);color:var(--accent2)}
+  .pri.low{background:var(--green-dim);color:var(--green)}
+  .todo-del{
+    border:none;background:none;color:var(--muted);cursor:pointer;font-size:16px;
+    padding:4px 6px;border-radius:6px;flex-shrink:0;transition:all .15s;
+  }
+  .todo-del:hover{color:var(--red);background:var(--red-dim)}
+
+  .todo-empty{text-align:center;color:var(--muted);font-size:13.5px;padding:40px 0;border:1px dashed var(--rule);border-radius:12px}
+
+  .todo-sync{
+    display:flex;align-items:center;gap:8px;margin-top:20px;
+    font-size:12px;color:var(--muted);
+  }
+  .sync-dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+  .sync-dot.ok{background:var(--green)}
+  .sync-dot.err{background:var(--red)}
+  .sync-dot.busy{background:var(--accent2);animation:pulse 1s infinite}
+  @keyframes pulse{50%{opacity:.3}}
+
+  /* ===== Settings modal ===== */
+  .modal-mask{position:fixed;inset:0;background:rgba(64,60,56,.45);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
+  .modal-mask.show{display:flex}
+  .modal{background:var(--bg2);border-radius:14px;padding:24px;width:100%;max-width:420px;box-shadow:0 12px 40px rgba(64,60,56,.18)}
+  .modal h3{font-size:17px;font-weight:800;margin-bottom:6px}
+  .modal p{font-size:13px;color:var(--muted);margin-bottom:16px}
+  .modal label{font-size:12px;font-weight:700;color:var(--muted);display:block;margin-bottom:6px}
+  .modal input[type=password],.modal input[type=text]{
+    width:100%;border:1px solid var(--rule);border-radius:8px;background:var(--bg);
+    color:var(--ink);font-size:13.5px;padding:10px 12px;font-family:inherit;margin-bottom:14px;
+  }
+  .modal input:focus{outline:none;border-color:var(--accent)}
+  .modal .hint{font-size:11.5px;color:var(--muted);background:var(--bg3);border-radius:8px;padding:10px 12px;margin-bottom:16px;line-height:1.7}
+  .modal .hint code{background:var(--bg2);padding:1px 5px;border-radius:4px;font-family:'SF Mono',Menlo,monospace;font-size:11px}
+  .modal-actions{display:flex;justify-content:flex-end;gap:10px}
+  .modal-actions button{border-radius:8px;padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;border:1px solid var(--rule);background:var(--bg2);color:var(--ink)}
+  .modal-actions button.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none}
+  .modal-actions button:hover{opacity:.9}
+  .token-status{font-size:12px;margin-top:8px}
+  .token-status.ok{color:var(--green)}
+  .token-status.err{color:var(--red)}
+
+  /* ===== Mobile bottom nav ===== */
+  .mobile-nav{display:none}
+
+  @media (max-width:768px){
+    .header{height:54px;padding:0 12px;gap:10px}
+    .brand-sub{display:none}
+    .main{height:calc(100vh - 54px)}
+    .nav-item{padding:8px 11px;font-size:12.5px}
+    .nav-ico{font-size:14px}
+    .todo-wrap{padding:20px 14px 100px}
+    .todo-add{flex-wrap:wrap}
+    .todo-add input{flex:1 1 100%}
+    .todo-add select{flex:1}
+    .todo-add button{flex:1}
+    .tstat{min-width:100px}
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="brand">
+    <div class="brand-mark">交</div>
+    <div>
+      <div class="brand-name">交易工作台</div>
+      <div class="brand-sub">WORKBENCH · 一站式</div>
+    </div>
+  </div>
+  <nav class="nav" id="nav">
+    <div class="nav-item active" data-mod="sim"><span class="nav-ico">📊</span>模拟盘</div>
+    <div class="nav-item" data-mod="review"><span class="nav-ico">📈</span>市场复盘</div>
+    <div class="nav-item" data-mod="chain"><span class="nav-ico">🔬</span>产业链</div>
+    <div class="nav-item" data-mod="todo"><span class="nav-ico">✅</span>Todo</div>
+    <div class="nav-item" data-mod="train"><span class="nav-ico">🎯</span>训练系统</div>
+  </nav>
+  <div class="header-right">
+    <button class="icon-btn" id="btn-settings" title="设置">⚙️</button>
+  </div>
+</header>
+
+<main class="main">
+
+  <!-- 模拟盘 -->
+  <section class="module active" id="mod-sim">
+    <div class="frame-wrap">
+      <iframe src="https://Tim0thy1.github.io/trading-review-console/trading-console-0808.html" loading="eager"></iframe>
+    </div>
+  </section>
+
+  <!-- 市场复盘 -->
+  <section class="module" id="mod-review">
+    <div class="frame-wrap">
+      <iframe src="https://Tim0thy1.github.io/market-review-suite/" loading="lazy"></iframe>
+    </div>
+  </section>
+
+  <!-- 产业链 -->
+  <section class="module" id="mod-chain">
+    <div class="frame-wrap">
+      <iframe src="https://Tim0thy1.github.io/pharma-report/" loading="lazy"></iframe>
+    </div>
+  </section>
+
+  <!-- Todo -->
+  <section class="module" id="mod-todo">
+    <div class="todo-wrap">
+      <div class="todo-head">
+        <div class="todo-kicker">TO-DO LIST</div>
+        <div class="todo-title">我的待办</div>
+        <div class="todo-sub">数据通过 GitHub API 同步，手机 / 电脑任何一端改动，另一端刷新即最新</div>
+      </div>
+
+      <div class="todo-stats">
+        <div class="tstat t"><div class="v" id="st-total">0</div><div class="l">全部</div></div>
+        <div class="tstat o"><div class="v" id="st-open">0</div><div class="l">未完成</div></div>
+        <div class="tstat g"><div class="v" id="st-done">0</div><div class="l">已完成</div></div>
+      </div>
+
+      <div class="todo-add">
+        <input type="text" id="new-text" placeholder="添加一条待办…" maxlength="200">
+        <select id="new-pri">
+          <option value="high">高</option>
+          <option value="mid" selected>中</option>
+          <option value="low">低</option>
+        </select>
+        <button id="btn-add">添加</button>
+      </div>
+
+      <div class="todo-list" id="todo-list"></div>
+      <div class="todo-empty" id="todo-empty" style="display:none">暂无待办，添加一条吧 🎉</div>
+
+      <div class="todo-sync">
+        <span class="sync-dot" id="sync-dot"></span>
+        <span id="sync-text">正在连接…</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 训练系统 -->
+  <section class="module" id="mod-train">
+    <div class="frame-wrap">
+      <iframe src="https://Tim0thy1.github.io/trading-review-console/intraday-training/intraday-training.html" loading="lazy"></iframe>
+    </div>
+  </section>
+
+</main>
+
+<!-- 设置弹窗 -->
+<div class="modal-mask" id="modal">
+  <div class="modal">
+    <h3>⚙️ 同步设置</h3>
+    <p>配置 GitHub Token 后，Todo 数据将写回工作台仓库，实现跨设备同步。</p>
+    <label>GitHub Token（Personal Access Token）</label>
+    <input type="password" id="token-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+    <div class="hint">
+      建议生成一个<b>只限本仓库</b>的 token：<br>
+      ① GitHub → Settings → Developer settings → Personal access tokens → <code>Fine-grained tokens</code><br>
+      ② Repository access 选 <code>Only select repositories</code> → 勾选 <code>trading-workbench</code><br>
+      ③ Permissions → Contents 选 <code>Read and write</code><br>
+      ④ 生成后粘贴到上方，点保存即可
+    </div>
+    <div class="modal-actions">
+      <button id="btn-cancel">取消</button>
+      <button class="primary" id="btn-save-token">保存并测试</button>
+    </div>
+    <div class="token-status" id="token-status"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var REPO = 'Tim0thy1/trading-workbench';
+  var FILE = 'data/todo.json';
+  var TOKEN_KEY = 'wb_token_v1';
+  var token = localStorage.getItem(TOKEN_KEY) || '';
+  var todos = [];
+  var sha = null;
+  var syncing = false;
+
+  // ===== 导航切换 =====
+  var navItems = document.querySelectorAll('.nav-item');
+  var modules = document.querySelectorAll('.module');
+  navItems.forEach(function(item){
+    item.addEventListener('click', function(){
+      var mod = item.getAttribute('data-mod');
+      navItems.forEach(function(n){ n.classList.remove('active'); });
+      item.classList.add('active');
+      modules.forEach(function(m){ m.classList.toggle('active', m.id === 'mod-' + mod); });
+      if(mod === 'todo'){ render(); }
+      window.scrollTo({top:0});
+    });
+  });
+
+  // ===== 设置弹窗 =====
+  var modal = document.getElementById('modal');
+  document.getElementById('btn-settings').addEventListener('click', function(){
+    document.getElementById('token-input').value = token;
+    document.getElementById('token-status').textContent = '';
+    modal.classList.add('show');
+  });
+  document.getElementById('btn-cancel').addEventListener('click', function(){ modal.classList.remove('show'); });
+  modal.addEventListener('click', function(e){ if(e.target === modal) modal.classList.remove('show'); });
+
+  document.getElementById('btn-save-token').addEventListener('click', async function(){
+    var t = document.getElementById('token-input').value.trim();
+    var st = document.getElementById('token-status');
+    if(!t){ st.textContent = '请输入 token'; st.className = 'token-status err'; return; }
+    // 测试 token 有效性
+    try{
+      var res = await fetch('https://api.github.com/repos/' + REPO, { headers:{ 'Authorization':'token '+t } });
+      if(!res.ok){ throw new Error('HTTP '+res.status); }
+      token = t;
+      localStorage.setItem(TOKEN_KEY, t);
+      st.textContent = '✅ Token 有效，已保存';
+      st.className = 'token-status ok';
+      setTimeout(function(){ modal.classList.remove('show'); }, 800);
+      loadTodos();
+    }catch(e){
+      st.textContent = '❌ Token 无效或权限不足：' + e.message;
+      st.className = 'token-status err';
+    }
+  });
+
+  // ===== 同步状态 =====
+  function setSync(state, text){
+    var dot = document.getElementById('sync-dot');
+    dot.className = 'sync-dot ' + state;
+    document.getElementById('sync-text').textContent = text;
+  }
+
+  // ===== 读取 Todo =====
+  async function loadTodos(){
+    if(!token){
+      setSync('err', '未配置 Token，点击右上角 ⚙️ 设置同步');
+      render();
+      return;
+    }
+    setSync('busy', '同步中…');
+    try{
+      var res = await fetch('https://api.github.com/repos/' + REPO + '/contents/' + FILE, {
+        headers:{ 'Authorization':'token '+token, 'Accept':'application/vnd.github+json' }
+      });
+      if(res.status === 404){
+        // 文件不存在，创建
+        todos = [];
+        sha = null;
+        await saveTodos(true);
+        setSync('ok', '已连接 · 数据已同步');
+      }else if(res.ok){
+        var data = await res.json();
+        var decoded = decodeURIComponent(escape(atob(data.content)));
+        var obj = JSON.parse(decoded);
+        todos = obj.items || [];
+        sha = data.sha;
+        setSync('ok', '已连接 · 最后同步 ' + new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'}));
+      }else{
+        throw new Error('HTTP '+res.status);
+      }
+      render();
+    }catch(e){
+      setSync('err', '同步失败：' + e.message + '（检查 Token 是否有效）');
+      render();
+    }
+  }
+
+  // ===== 写入 Todo =====
+  async function saveTodos(isNew){
+    if(!token) return false;
+    var payload = { items: todos };
+    var content = btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))));
+    var body = {
+      message: '更新 Todo · ' + new Date().toISOString(),
+      content: content
+    };
+    if(!isNew && sha) body.sha = sha;
+    var res = await fetch('https://api.github.com/repos/' + REPO + '/contents/' + FILE, {
+      method: 'PUT',
+      headers:{ 'Authorization':'token '+token, 'Accept':'application/vnd.github+json', 'Content-Type':'application/json' },
+      body: JSON.stringify(body)
+    });
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    var data = await res.json();
+    sha = data.content.sha;
+    return true;
+  }
+
+  // ===== 渲染 =====
+  function render(){
+    var list = document.getElementById('todo-list');
+    var empty = document.getElementById('todo-empty');
+    list.innerHTML = '';
+    document.getElementById('st-total').textContent = todos.length;
+    document.getElementById('st-open').textContent = todos.filter(function(t){return !t.done}).length;
+    document.getElementById('st-done').textContent = todos.filter(function(t){return t.done}).length;
+    if(todos.length === 0){ empty.style.display = 'block'; return; }
+    empty.style.display = 'none';
+
+    // 排序：未完成在前，按优先级 高>中>低，再按创建时间倒序
+    var priOrder = {high:0, mid:1, low:2};
+    var sorted = todos.slice().sort(function(a,b){
+      if(a.done !== b.done) return a.done ? 1 : -1;
+      if(priOrder[a.priority] !== priOrder[b.priority]) return priOrder[a.priority] - priOrder[b.priority];
+      return (b.created||0) - (a.created||0);
+    });
+
+    sorted.forEach(function(t){
+      var el = document.createElement('div');
+      el.className = 'todo-item' + (t.done ? ' done' : '');
+      var priName = {high:'高', mid:'中', low:'低'}[t.priority] || '中';
+      el.innerHTML =
+        '<div class="todo-check" data-id="'+t.id+'">'+(t.done?'✓':'')+'</div>'+
+        '<div class="todo-main">'+
+          '<div class="todo-text"></div>'+
+          '<div class="todo-meta"><span class="pri '+t.priority+'">'+priName+'优先级</span><span>'+t.date+'</span></div>'+
+        '</div>'+
+        '<button class="todo-del" data-id="'+t.id+'" title="删除">✕</button>';
+      el.querySelector('.todo-text').textContent = t.text;
+      list.appendChild(el);
+    });
+  }
+
+  // ===== 事件 =====
+  document.getElementById('btn-add').addEventListener('click', addTodo);
+  document.getElementById('new-text').addEventListener('keydown', function(e){ if(e.key==='Enter') addTodo(); });
+
+  function addTodo(){
+    var text = document.getElementById('new-text').value.trim();
+    if(!text) return;
+    var pri = document.getElementById('new-pri').value;
+    var now = new Date();
+    var d = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+    todos.push({
+      id: 't' + Date.now() + Math.random().toString(36).slice(2,6),
+      text: text,
+      done: false,
+      priority: pri,
+      date: d,
+      created: Date.now()
+    });
+    document.getElementById('new-text').value = '';
+    render();
+    push();
+  }
+
+  document.getElementById('todo-list').addEventListener('click', function(e){
+    var check = e.target.closest('.todo-check');
+    var del = e.target.closest('.todo-del');
+    if(check){
+      var id = check.getAttribute('data-id');
+      var t = todos.find(function(x){return x.id===id});
+      if(t){ t.done = !t.done; render(); push(); }
+    }
+    if(del){
+      var did = del.getAttribute('data-id');
+      todos = todos.filter(function(x){return x.id!==did});
+      render();
+      push();
+    }
+  });
+
+  // ===== 推送 =====
+  var pushTimer = null;
+  function push(){
+    if(syncing) return;
+    setSync('busy', '保存中…');
+    clearTimeout(pushTimer);
+    pushTimer = setTimeout(async function(){
+      try{
+        syncing = true;
+        await saveTodos(false);
+        setSync('ok', '已保存 · ' + new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'}));
+      }catch(e){
+        setSync('err', '保存失败：' + e.message);
+      }finally{
+        syncing = false;
+      }
+    }, 300);
+  }
+
+  // ===== 启动 =====
+  loadTodos();
+})();
+</script>
+</body>
+</html>
