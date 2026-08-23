@@ -1,0 +1,25 @@
+{
+  "name": "交易工作台",
+  "short_name": "交易台",
+  "description": "个人交易工作台：模拟盘 / 市场复盘 / 产业链 / Todo 一站式入口",
+  "start_url": "/trading-workbench/",
+  "scope": "/trading-workbench/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FBFAF8",
+  "theme_color": "#0D9488",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
