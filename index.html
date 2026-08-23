@@ -72,8 +72,19 @@
   .module{display:none;height:100%}
   .module.active{display:block;animation:fade .25s ease}
   @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-  .frame-wrap{height:100%}
+  @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+  .frame-wrap{height:100%;position:relative}
   .frame-wrap iframe{width:100%;height:100%;border:none;display:block;background:var(--bg)}
+  .refresh-btn{
+    position:absolute;top:14px;right:14px;z-index:5;
+    width:38px;height:38px;border-radius:10px;border:1px solid var(--rule);
+    background:var(--bg2);color:var(--ink);cursor:pointer;
+    display:flex;align-items:center;justify-content:center;font-size:16px;
+    box-shadow:0 4px 12px rgba(0,0,0,.1);transition:all .2s ease;opacity:.85;
+  }
+  .refresh-btn:hover{color:var(--accent);border-color:var(--accent);opacity:1;transform:rotate(180deg)}
+  .refresh-btn:active{transform:scale(.92)}
+  .refresh-btn.spinning{animation:spin .8s ease}
 
   /* ===== Todo ===== */
   .todo-wrap{max-width:720px;margin:0 auto;padding:32px 24px 60px;height:100%;overflow-y:auto}
@@ -238,6 +249,7 @@
     <!-- 模拟盘 -->
     <section class="module active" id="mod-sim">
       <div class="frame-wrap">
+        <button class="refresh-btn" data-refresh="mod-sim" title="刷新当前页面">⟳</button>
         <iframe src="https://Tim0thy1.github.io/trading-review-console/trading-console-0808.html" loading="eager"></iframe>
       </div>
     </section>
@@ -245,6 +257,7 @@
     <!-- 实盘基金 -->
     <section class="module" id="mod-fund">
       <div class="frame-wrap">
+        <button class="refresh-btn" data-refresh="mod-fund" title="刷新当前页面">⟳</button>
         <iframe src="https://Tim0thy1.github.io/fund-tracker/" loading="lazy"></iframe>
       </div>
     </section>
@@ -252,6 +265,7 @@
     <!-- 市场复盘 -->
     <section class="module" id="mod-review">
       <div class="frame-wrap">
+        <button class="refresh-btn" data-refresh="mod-review" title="刷新当前页面">⟳</button>
         <iframe src="https://Tim0thy1.github.io/market-review-suite/" loading="lazy"></iframe>
       </div>
     </section>
@@ -259,6 +273,7 @@
     <!-- 产业链 -->
     <section class="module" id="mod-chain">
       <div class="frame-wrap">
+        <button class="refresh-btn" data-refresh="mod-chain" title="刷新当前页面">⟳</button>
         <iframe src="https://Tim0thy1.github.io/pharma-report/" loading="lazy"></iframe>
       </div>
     </section>
@@ -301,6 +316,7 @@
     <!-- 训练系统 -->
     <section class="module" id="mod-train">
       <div class="frame-wrap">
+        <button class="refresh-btn" data-refresh="mod-train" title="刷新当前页面">⟳</button>
         <iframe src="https://Tim0thy1.github.io/trading-review-console/intraday-training/intraday-training.html" loading="lazy"></iframe>
       </div>
     </section>
@@ -378,6 +394,23 @@
       modules.forEach(function(m){ m.classList.toggle('active', m.id === 'mod-' + mod); });
       if(mod === 'todo'){ render(); }
       window.scrollTo({top:0});
+    });
+  });
+
+  // ===== 刷新按钮：重新加载当前模块的 iframe =====
+  document.querySelectorAll('.refresh-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var modId = btn.getAttribute('data-refresh');
+      var mod = document.getElementById(modId);
+      if(!mod) return;
+      var iframe = mod.querySelector('iframe');
+      if(!iframe) return;
+      btn.classList.add('spinning');
+      setTimeout(function(){ btn.classList.remove('spinning'); }, 800);
+      // 给 iframe 加时间戳强制刷新，绕过缓存
+      var src = iframe.src;
+      var sep = src.indexOf('?') > -1 ? '&' : '?';
+      iframe.src = src.split('?_t=')[0] + sep + '_t=' + Date.now();
     });
   });
 
