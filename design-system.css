@@ -28,6 +28,11 @@
   --red:#DC2626;
   --red-dim:rgba(220,38,38,.12);
   --amber-dim:rgba(217,119,6,.10);
+  --orange:#D97706;
+  --warn:#D97706;
+  --accent3:#7C3AED;
+  --font-sans:-apple-system,"PingFang SC","Microsoft YaHei","Noto Sans CJK SC",sans-serif;
+  --font-mono:'SF Mono',Menlo,Consolas,"JetBrains Mono",monospace;
   --shadow:0 1px 2px rgba(64,60,56,.05),0 4px 16px rgba(64,60,56,.06);
   --shadow-lg:0 12px 40px rgba(64,60,56,.16);
   --glass:rgba(255,255,255,.85);
@@ -56,6 +61,11 @@
   --red:#EF5350;
   --red-dim:rgba(239,83,80,.14);
   --amber-dim:rgba(245,166,35,.13);
+  --orange:#F5A623;
+  --warn:#F5A623;
+  --accent3:#A78BFA;
+  --font-sans:-apple-system,"PingFang SC","Microsoft YaHei","Noto Sans CJK SC",sans-serif;
+  --font-mono:'SF Mono',Menlo,Consolas,"JetBrains Mono",monospace;
   --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.25);
   --shadow-lg:0 12px 40px rgba(0,0,0,.45);
   --glass:rgba(18,26,36,.8);
