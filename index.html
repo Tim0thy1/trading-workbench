@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="交易工作台">
 <meta name="theme-color" content="#FBFAF8">
-<meta name="description" content="个人交易工作台：模拟盘 / 市场复盘 / 产业链 / Todo 一站式入口">
+<meta name="description" content="个人交易工作台：模拟盘 / 市场复盘 / 深度专题 / 产业链 / Todo 一站式入口">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="icon" type="image/png" href="icon-192.png">
@@ -227,7 +227,8 @@
       <div class="nav-item active" data-mod="sim"><span class="nav-ico">📊</span>模拟盘</div>
       <div class="nav-item" data-mod="fund"><span class="nav-ico">💰</span>实盘基金</div>
       <div class="nav-item" data-mod="review"><span class="nav-ico">📈</span>市场复盘</div>
-      <div class="nav-item" data-mod="chain"><span class="nav-ico">🔬</span>产业链</div>
+      <div class="nav-item" data-mod="deep"><span class="nav-ico">🔬</span>深度专题</div>
+      <div class="nav-item" data-mod="chain"><span class="nav-ico">🧬</span>产业链</div>
       <div class="nav-item" data-mod="todo"><span class="nav-ico">✅</span>Todo</div>
       <div class="nav-item" data-mod="train"><span class="nav-ico">🎯</span>训练系统</div>
     </nav>
@@ -267,6 +268,14 @@
       <div class="frame-wrap">
         <button class="refresh-btn" data-refresh="mod-review" title="刷新当前页面">⟳</button>
         <iframe src="https://Tim0thy1.github.io/market-review-suite/" loading="lazy"></iframe>
+      </div>
+    </section>
+
+    <!-- 深度专题 -->
+    <section class="module" id="mod-deep">
+      <div class="frame-wrap">
+        <button class="refresh-btn" data-refresh="mod-deep" title="刷新当前页面">⟳</button>
+        <iframe src="https://Tim0thy1.github.io/market-review-suite/%E6%B7%B1%E5%BA%A6%E4%B8%93%E9%A2%98/" loading="lazy"></iframe>
       </div>
     </section>
 
@@ -330,7 +339,8 @@
     <div class="mnav-item active" data-mod="sim"><span class="m-ico">📊</span>模拟盘</div>
     <div class="mnav-item" data-mod="fund"><span class="m-ico">💰</span>基金</div>
     <div class="mnav-item" data-mod="review"><span class="m-ico">📈</span>复盘</div>
-    <div class="mnav-item" data-mod="chain"><span class="m-ico">🔬</span>产业链</div>
+    <div class="mnav-item" data-mod="deep"><span class="m-ico">🔬</span>专题</div>
+    <div class="mnav-item" data-mod="chain"><span class="m-ico">🧬</span>产业链</div>
     <div class="mnav-item" data-mod="todo"><span class="m-ico">✅</span>Todo</div>
     <div class="mnav-item" data-mod="train"><span class="m-ico">🎯</span>训练</div>
   </div>
