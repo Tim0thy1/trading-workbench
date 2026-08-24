@@ -126,13 +126,13 @@
     {
       "id": "t17875603811661wgw",
       "text": "擦一下洞洞鞋",
-      "done": false,
+      "done": true,
       "priority": "mid",
       "type": "其他",
       "due": "2026-08-24",
       "date": "2026-08-24",
       "created": 1787560381166,
-      "doneAt": null
+      "doneAt": 1787578090864
     },
     {
       "id": "t1787560382944wifv",
