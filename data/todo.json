@@ -96,13 +96,13 @@
     {
       "id": "t1787560113195v0bq",
       "text": "不要再乱吃零食饮料！！！",
-      "done": true,
+      "done": false,
       "priority": "high",
       "type": "健康",
       "due": "2026-08-24",
       "date": "2026-08-24",
       "created": 1787560113195,
-      "doneAt": 1787614953856
+      "doneAt": null
     },
     {
       "id": "t17875601811627mp4",
