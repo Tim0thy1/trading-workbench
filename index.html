@@ -224,12 +224,12 @@
       </div>
     </div>
     <nav class="side-nav" id="nav">
-      <div class="nav-item active" data-mod="sim"><span class="nav-ico">📊</span>模拟盘</div>
+      <div class="nav-item active" data-mod="todo"><span class="nav-ico">✅</span>Todo</div>
+      <div class="nav-item" data-mod="sim"><span class="nav-ico">📊</span>模拟盘</div>
       <div class="nav-item" data-mod="fund"><span class="nav-ico">💰</span>实盘基金</div>
       <div class="nav-item" data-mod="review"><span class="nav-ico">📈</span>市场复盘</div>
       <div class="nav-item" data-mod="deep"><span class="nav-ico">🔬</span>深度专题</div>
       <div class="nav-item" data-mod="chain"><span class="nav-ico">🧬</span>产业链</div>
-      <div class="nav-item" data-mod="todo"><span class="nav-ico">✅</span>Todo</div>
       <div class="nav-item" data-mod="train"><span class="nav-ico">🎯</span>训练系统</div>
     </nav>
     <div class="side-foot">
@@ -247,8 +247,43 @@
   <!-- ===== 主内容 ===== -->
   <main class="main">
 
+    <!-- Todo -->
+    <section class="module active" id="mod-todo">
+      <div class="todo-wrap">
+        <div class="todo-head">
+          <div class="todo-kicker">TO-DO LIST</div>
+          <div class="todo-title">我的待办</div>
+          <div class="todo-sub">数据通过 GitHub API 同步，手机 / 电脑任何一端改动，另一端刷新即最新</div>
+        </div>
+
+        <div class="todo-stats">
+          <div class="tstat t"><div class="v" id="st-total">0</div><div class="l">全部</div></div>
+          <div class="tstat o"><div class="v" id="st-open">0</div><div class="l">未完成</div></div>
+          <div class="tstat g"><div class="v" id="st-done">0</div><div class="l">已完成</div></div>
+        </div>
+
+        <div class="todo-add">
+          <input type="text" id="new-text" placeholder="添加一条待办…" maxlength="200">
+          <select id="new-pri">
+            <option value="high">高</option>
+            <option value="mid" selected>中</option>
+            <option value="low">低</option>
+          </select>
+          <button id="btn-add">添加</button>
+        </div>
+
+        <div class="todo-list" id="todo-list"></div>
+        <div class="todo-empty" id="todo-empty" style="display:none">暂无待办，添加一条吧 🎉</div>
+
+        <div class="todo-sync">
+          <span class="sync-dot" id="sync-dot"></span>
+          <span id="sync-text">正在连接…</span>
+        </div>
+      </div>
+    </section>
+
     <!-- 模拟盘 -->
-    <section class="module active" id="mod-sim">
+    <section class="module" id="mod-sim">
       <div class="frame-wrap">
         <button class="refresh-btn" data-refresh="mod-sim" title="刷新当前页面">⟳</button>
         <iframe src="https://Tim0thy1.github.io/trading-review-console/trading-console-0808.html" loading="eager"></iframe>
@@ -287,41 +322,6 @@
       </div>
     </section>
 
-    <!-- Todo -->
-    <section class="module" id="mod-todo">
-      <div class="todo-wrap">
-        <div class="todo-head">
-          <div class="todo-kicker">TO-DO LIST</div>
-          <div class="todo-title">我的待办</div>
-          <div class="todo-sub">数据通过 GitHub API 同步，手机 / 电脑任何一端改动，另一端刷新即最新</div>
-        </div>
-
-        <div class="todo-stats">
-          <div class="tstat t"><div class="v" id="st-total">0</div><div class="l">全部</div></div>
-          <div class="tstat o"><div class="v" id="st-open">0</div><div class="l">未完成</div></div>
-          <div class="tstat g"><div class="v" id="st-done">0</div><div class="l">已完成</div></div>
-        </div>
-
-        <div class="todo-add">
-          <input type="text" id="new-text" placeholder="添加一条待办…" maxlength="200">
-          <select id="new-pri">
-            <option value="high">高</option>
-            <option value="mid" selected>中</option>
-            <option value="low">低</option>
-          </select>
-          <button id="btn-add">添加</button>
-        </div>
-
-        <div class="todo-list" id="todo-list"></div>
-        <div class="todo-empty" id="todo-empty" style="display:none">暂无待办，添加一条吧 🎉</div>
-
-        <div class="todo-sync">
-          <span class="sync-dot" id="sync-dot"></span>
-          <span id="sync-text">正在连接…</span>
-        </div>
-      </div>
-    </section>
-
     <!-- 训练系统 -->
     <section class="module" id="mod-train">
       <div class="frame-wrap">
@@ -336,12 +336,12 @@
 <!-- ===== 底部 Tab（手机端） ===== -->
 <nav class="mobile-nav">
   <div class="mnav-inner">
-    <div class="mnav-item active" data-mod="sim"><span class="m-ico">📊</span>模拟盘</div>
+    <div class="mnav-item active" data-mod="todo"><span class="m-ico">✅</span>Todo</div>
+    <div class="mnav-item" data-mod="sim"><span class="m-ico">📊</span>模拟盘</div>
     <div class="mnav-item" data-mod="fund"><span class="m-ico">💰</span>基金</div>
     <div class="mnav-item" data-mod="review"><span class="m-ico">📈</span>复盘</div>
     <div class="mnav-item" data-mod="deep"><span class="m-ico">🔬</span>专题</div>
     <div class="mnav-item" data-mod="chain"><span class="m-ico">🧬</span>产业链</div>
-    <div class="mnav-item" data-mod="todo"><span class="m-ico">✅</span>Todo</div>
     <div class="mnav-item" data-mod="train"><span class="m-ico">🎯</span>训练</div>
   </div>
 </nav>
