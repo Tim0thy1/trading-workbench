@@ -200,6 +200,42 @@
   }
   .todo-edit:hover{color:var(--accent);background:var(--accent-soft)}
 
+  /* ===== 未完成理由 ===== */
+  .todo-reason{
+    margin-top:6px;font-size:12px;color:var(--accent2);background:var(--amber-dim);
+    border-left:3px solid var(--accent2);border-radius:0 6px 6px 0;padding:5px 9px;line-height:1.5;
+    word-break:break-word;
+  }
+  .todo-reason b{font-weight:700}
+  .todo-reason .rr-del{
+    border:none;background:none;color:var(--muted);cursor:pointer;font-size:12px;
+    margin-left:8px;padding:0 4px;border-radius:4px;vertical-align:middle;
+  }
+  .todo-reason .rr-del:hover{color:var(--red);background:var(--red-dim)}
+
+  /* ===== 理由填写弹窗 ===== */
+  .reason-mask{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:998;display:none;align-items:center;justify-content:center;padding:20px}
+  .reason-mask.show{display:flex}
+  .reason-box{
+    background:var(--bg2);border:1px solid var(--rule);border-radius:16px;
+    width:100%;max-width:440px;padding:22px 20px;box-shadow:0 20px 60px rgba(0,0,0,.25);
+    animation:fade .2s ease;
+  }
+  .reason-box h4{margin:0 0 6px;font-size:16px;color:var(--ink)}
+  .reason-box .rq{font-size:12px;color:var(--muted);margin-bottom:14px}
+  .reason-box textarea{
+    width:100%;border:1px solid var(--rule);border-radius:8px;background:var(--bg);
+    color:var(--ink);font-size:14px;padding:10px 12px;font-family:inherit;box-sizing:border-box;
+    min-height:74px;resize:vertical;
+  }
+  .reason-box textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  .reason-actions{display:flex;gap:10px;margin-top:14px}
+  .reason-actions button{
+    flex:1;border:none;border-radius:8px;padding:11px;font-weight:700;font-size:14px;cursor:pointer;transition:opacity .15s;
+  }
+  .reason-save{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+  .reason-skip{background:var(--bg3);color:var(--muted)}
+
   /* ===== 编辑弹窗 ===== */
   .edit-mask{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:999;display:none;align-items:center;justify-content:center;padding:20px}
   .edit-mask.show{display:flex}
@@ -473,9 +509,23 @@
                 </select>
               </div>
             </div>
+            <div class="edit-field"><label>未完成理由（选填）</label><input type="text" id="edit-reason" maxlength="200" placeholder="如：临时有事 / 优先级调整 / 拖延…"></div>
             <div class="edit-actions">
               <button class="edit-cancel" id="edit-cancel">取消</button>
               <button class="edit-save" id="edit-save">保存</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 未完成理由填写弹窗 -->
+        <div class="reason-mask" id="reason-mask">
+          <div class="reason-box">
+            <h4>📝 为什么没完成？</h4>
+            <div class="rq" id="reason-q">给未完成的待办留个理由，方便复盘。</div>
+            <textarea id="reason-text" maxlength="200" placeholder="写下没完成的原因…"></textarea>
+            <div class="reason-actions">
+              <button class="reason-skip" id="reason-skip">跳过</button>
+              <button class="reason-save" id="reason-save">保存理由</button>
             </div>
           </div>
         </div>
@@ -774,6 +824,11 @@
         dueHtml = '<span class="due'+(overdue?' overdue':'')+'">📅 '+t.due+(overdue?' 已逾期':'')+'</span>';
       }
       var addDate = t.date || (t.created ? fmtDate(new Date(t.created)) : '');
+      var reasonHtml = '';
+      if(t.reason && !t.done){
+        reasonHtml = '<div class="todo-reason"><b>未完成理由：</b>'+t.reason+
+          '<button class="rr-del" data-id="'+t.id+'" title="清除理由">✕</button></div>';
+      }
       el.innerHTML =
         '<div class="todo-check" data-id="'+t.id+'">'+(t.done?'✓':'')+'</div>'+
         '<div class="todo-main">'+
@@ -784,6 +839,7 @@
             dueHtml+
             (addDate ? '<span>添加于 '+addDate+'</span>' : '')+
           '</div>'+
+          reasonHtml+
         '</div>'+
         '<button class="todo-edit" data-id="'+t.id+'" title="编辑">✎</button>'+
         '<button class="todo-del" data-id="'+t.id+'" title="删除">✕</button>';
@@ -832,13 +888,17 @@
     var check = e.target.closest('.todo-check');
     var del = e.target.closest('.todo-del');
     var edit = e.target.closest('.todo-edit');
+    var rrDel = e.target.closest('.rr-del');
     if(check){
       var id = check.getAttribute('data-id');
       var t = todos.find(function(x){return x.id===id});
       if(t){
+        var was = t.done;
         t.done = !t.done;
         t.doneAt = t.done ? Date.now() : null;
         render(); computeStats(); push();
+        // 从完成→未完成：弹出理由填写
+        if(was && !t.done){ openReason(id); }
       }
     }
     if(del){
@@ -848,6 +908,11 @@
     }
     if(edit){
       openEdit(edit.getAttribute('data-id'));
+    }
+    if(rrDel){
+      var rid = rrDel.getAttribute('data-id');
+      var rt = todos.find(function(x){return x.id===rid});
+      if(rt){ rt.reason = null; render(); computeStats(); push(); }
     }
   });
 
@@ -861,6 +926,7 @@
     document.getElementById('edit-type').value = t.type || '其他';
     document.getElementById('edit-due').value = t.due || '';
     document.getElementById('edit-pri').value = t.priority || 'mid';
+    document.getElementById('edit-reason').value = t.reason || '';
     document.getElementById('edit-mask').classList.add('show');
   }
   function closeEdit(){
@@ -876,12 +942,45 @@
     t.type = document.getElementById('edit-type').value;
     t.due = document.getElementById('edit-due').value || null;
     t.priority = document.getElementById('edit-pri').value;
+    t.reason = document.getElementById('edit-reason').value.trim() || null;
     closeEdit();
     render(); computeStats(); push();
   });
   document.getElementById('edit-cancel').addEventListener('click', closeEdit);
   document.getElementById('edit-mask').addEventListener('click', function(e){
     if(e.target === this) closeEdit();
+  });
+
+  // ===== 未完成理由填写 =====
+  var reasonId = null;
+  function openReason(id){
+    var t = todos.find(function(x){return x.id===id});
+    if(!t) return;
+    reasonId = id;
+    var el = document.getElementById('reason-text');
+    el.value = t.reason || '';
+    if(t.reason){ document.getElementById('reason-q').textContent = '更新这条待办未完成的理由：'; }
+    else { document.getElementById('reason-q').textContent = '为什么没完成？写下来方便复盘：'; }
+    document.getElementById('reason-mask').classList.add('show');
+    setTimeout(function(){ el.focus(); }, 60);
+  }
+  function closeReason(save){
+    var t = reasonId && todos.find(function(x){return x.id===reasonId});
+    if(t && save){
+      var v = document.getElementById('reason-text').value.trim();
+      t.reason = v || null;
+      render(); computeStats(); push();
+    }
+    document.getElementById('reason-mask').classList.remove('show');
+    reasonId = null;
+  }
+  document.getElementById('reason-save').addEventListener('click', function(){ closeReason(true); });
+  document.getElementById('reason-skip').addEventListener('click', function(){ closeReason(false); });
+  document.getElementById('reason-mask').addEventListener('click', function(e){
+    if(e.target === this) closeReason(false);
+  });
+  document.getElementById('reason-text').addEventListener('keydown', function(e){
+    if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); closeReason(true); }
   });
 
   // ===== 周期统计 =====
