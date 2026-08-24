@@ -729,6 +729,12 @@
     });
   }
 
+  // 截止日期默认今天
+  (function(){
+    var now = new Date();
+    document.getElementById('new-due').value = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+  })();
+
   // ===== 事件 =====
   document.getElementById('btn-add').addEventListener('click', addTodo);
   document.getElementById('new-text').addEventListener('keydown', function(e){ if(e.key==='Enter') addTodo(); });
@@ -752,7 +758,8 @@
       created: Date.now()
     });
     document.getElementById('new-text').value = '';
-    document.getElementById('new-due').value = '';
+    var _now = new Date();
+    document.getElementById('new-due').value = _now.getFullYear()+'-'+String(_now.getMonth()+1).padStart(2,'0')+'-'+String(_now.getDate()).padStart(2,'0');
     render();
     computeStats();
     push();
