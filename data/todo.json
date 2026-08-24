@@ -126,13 +126,13 @@
     {
       "id": "t17875603811661wgw",
       "text": "擦一下洞洞鞋",
-      "done": true,
+      "done": false,
       "priority": "mid",
       "type": "其他",
       "due": "2026-08-24",
       "date": "2026-08-24",
       "created": 1787560381166,
-      "doneAt": 1787576110325
+      "doneAt": null
     },
     {
       "id": "t1787560382944wifv",
@@ -147,13 +147,13 @@
     {
       "id": "t17875625440869a12",
       "text": "买个新砧板；换个新祸；换个新净水壶",
-      "done": true,
+      "done": false,
       "priority": "high",
       "type": "生活",
       "due": "2026-09-30",
       "date": "2026-08-24",
       "created": 1787562544086,
-      "doneAt": 1787578073922
+      "doneAt": null
     }
   ]
 }
