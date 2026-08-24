@@ -63,12 +63,13 @@
     {
       "id": "t1787535778178xgm6",
       "text": "记账",
-      "done": false,
+      "done": true,
       "priority": "mid",
       "type": "生活",
       "due": "2026-08-24",
       "date": "2026-08-24",
-      "created": 1787535778178
+      "created": 1787535778178,
+      "doneAt": 1787535782222
     }
   ]
 }
