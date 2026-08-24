@@ -158,7 +158,8 @@
   .todo-del:hover{color:var(--red);background:var(--red-dim)}
 
   .todo-empty{text-align:center;color:var(--muted);font-size:13.5px;padding:40px 0;border:1px dashed var(--rule);border-radius:12px}
-  .todo-sync{display:flex;align-items:center;gap:8px;margin-top:20px;font-size:12px;color:var(--muted)}
+  .todo-sync{display:flex;align-items:center;gap:8px;margin-top:20px;font-size:12px;color:var(--muted);cursor:pointer;user-select:none}
+  .todo-sync:hover{color:var(--ink)}
   .sync-dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
   .sync-dot.ok{background:var(--green)}
   .sync-dot.err{background:var(--red)}
@@ -285,7 +286,7 @@
         <div class="todo-list" id="todo-list"></div>
         <div class="todo-empty" id="todo-empty" style="display:none">暂无待办，添加一条吧 🎉</div>
 
-        <div class="todo-sync">
+        <div class="todo-sync" id="todo-sync-bar">
           <span class="sync-dot" id="sync-dot"></span>
           <span id="sync-text">正在连接…</span>
         </div>
@@ -436,19 +437,16 @@
 
   // ===== 设置弹窗 =====
   var modal = document.getElementById('modal');
-  document.getElementById('btn-settings-drawer').addEventListener('click', function(){
+  function openSettings(){
     document.getElementById('token-input').value = token;
     document.getElementById('token-status').textContent = '';
     modal.classList.add('show');
-  });
-  var btnSettingsTodo = document.getElementById('btn-settings-todo');
-  if(btnSettingsTodo){
-    btnSettingsTodo.addEventListener('click', function(){
-      document.getElementById('token-input').value = token;
-      document.getElementById('token-status').textContent = '';
-      modal.classList.add('show');
-    });
   }
+  document.getElementById('btn-settings-drawer').addEventListener('click', openSettings);
+  var btnSettingsTodo = document.getElementById('btn-settings-todo');
+  if(btnSettingsTodo) btnSettingsTodo.addEventListener('click', openSettings);
+  var syncBar = document.getElementById('todo-sync-bar');
+  if(syncBar) syncBar.addEventListener('click', openSettings);
   document.getElementById('btn-cancel').addEventListener('click', function(){ modal.classList.remove('show'); });
   modal.addEventListener('click', function(e){ if(e.target === modal) modal.classList.remove('show'); });
 
