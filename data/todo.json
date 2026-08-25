@@ -178,10 +178,11 @@
       "text": "还是要改改盘前分析，不然每次都一大堆",
       "done": false,
       "priority": "mid",
-      "type": "工作",
+      "type": "其他",
       "due": "2026-08-25",
       "date": "2026-08-25",
-      "created": 1787653618066
+      "created": 1787653618066,
+      "reason": null
     }
   ]
 }
