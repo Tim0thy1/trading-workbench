@@ -16,7 +16,7 @@
       "done": false,
       "priority": "mid",
       "type": "生活",
-      "due": "2026-08-25",
+      "due": "2026-08-31",
       "date": "2026-08-24",
       "created": 1787533627986,
       "reason": "改成次日完成"
@@ -188,13 +188,14 @@
     {
       "id": "t1787653860137dfva",
       "text": "给复盘系统也更新一下才行，好些内容不会更新",
-      "done": false,
+      "done": true,
       "priority": "mid",
       "type": "其他",
       "due": "2026-08-31",
       "date": "2026-08-25",
       "created": 1787653860137,
-      "reason": null
+      "reason": null,
+      "doneAt": 1787831839117
     }
   ]
 }
